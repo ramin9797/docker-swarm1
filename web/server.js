@@ -2,23 +2,19 @@ const os = require('os');
 const express = require('express');
 const app = express();
 const redis = require('redis');
-const redisClient = redis.createClient({
-  host: 'redis',
-  port: 6379
+const axios = require('axios');
+
+app.get('/', async function(req, res) {
+    try {
+        // Отправка запроса к проекту B
+        const response = await axios.get('http://projectb:3000');
+        res.send(`Response from Project B: ${response.data}`);
+      } catch (error) {
+        console.error('Error contacting Project B:', error.message);
+        res.status(500).send('Error contacting Project B');
+      }
 });
 
-app.get('/', function(req, res) {
-    redisClient.get('numVisits', function(err, numVisits) {
-        numVisitsToDisplay = parseInt(numVisits) + 1;
-        if (isNaN(numVisitsToDisplay)) {
-            numVisitsToDisplay = 1;
-        }
-       res.send(os.hostname() +': Number of visits is: ' + numVisitsToDisplay);
-        numVisits++;
-        redisClient.set('numVisits', numVisits);
-    });
-});
-
-app.listen(5000, function() {
+app.listen(3000, function() {
     console.log('Web application is listening on port 5000');
 });

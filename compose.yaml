@@ -1,27 +1,39 @@
+version: '3.7'
 
 services:
-  redis:
-    image: 'redislabs/redismod'
-    ports:
-      - '6379:6379'
   web1:
-    restart: on-failure
-    build: ./web
+    image: 'app1'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
     hostname: web1
     ports:
-      - '81:5000'
-  web2:
-    restart: on-failure
-    build: ./web
-    hostname: web2
+      - '3000:3000'
+
+  projectb:
+    image: 'app2'
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    hostname: projectb
     ports:
-      - '82:5000'
-  nginx:
-    build: ./nginx
-    ports:
-    - '80:80'
-    depends_on:
-    - web1
-    - web2
+      - '4000:4000'
+#   postgres:
+#     image: postgres:latest
+#     environment:
+#       POSTGRES_DB: mydatabase
+#       POSTGRES_USER: myuser
+#       POSTGRES_PASSWORD: mypassword
+#     volumes:
+#       - nfs-share:/var/lib/postgresql/data
 
 
+# volumes:
+#   nfs-share:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       o: addr=localhost,rw
+#       device: ":/path/to/nfs/share"
